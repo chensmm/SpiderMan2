@@ -1,3 +1,4 @@
+
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "SpiderMan2Character.h"
@@ -82,6 +83,9 @@ ASpiderMan2Character::ASpiderMan2Character()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+	//BlockSphere = CreateDefaultSubobject<USphereComponent>(TEXT("BlockComponent"));
+	
+	this->GetComponents(CapsuleComp);
 }
 
 void ASpiderMan2Character::BeginPlay()
@@ -138,52 +142,73 @@ void ASpiderMan2Character::SetupPlayerInputComponent(class UInputComponent* Play
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ASpiderMan2Character::LookUpAtRate);
 }
 
+void ASpiderMan2Character::Swing()
+{
+	/*ConstraintComp = Cast<UPhysicsConstraintComponent>(this->GetComponentByClass(UPhysicsConstraintComponent::StaticClass()));
+	CapsuleRot = CapsuleComp[0]->GetComponentRotation();
+
+	CapsuleComp[0]->SetSimulatePhysics(true);
+	BlockSphere->SetWorldLocation(LastActor->hitPosition);
+	ConstraintComp->SetWorldLocation(LastActor->hitPosition);
+	ConstraintComp->SetConstrainedComponents(BlockSphere, NAME_None, CapsuleComp[0], NAME_None);*/
+}
+
+void ASpiderMan2Character::UnSwing()
+{
+	/*CapsuleComp[0]->SetSimulatePhysics(false);
+	ConstraintComp->BreakConstraint();
+	CapsuleComp[0]->SetWorldRotation(CapsuleRot);*/
+}
+
+
+
 void ASpiderMan2Character::OnFire()
 {
-	// try and fire a projectile
-	if (ProjectileClass != nullptr)
-	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
-		{
-			if (bUsingMotionControllers)
-			{
-				const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<ASpiderMan2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation);
-			}
-			else
-			{
-				const FRotator SpawnRotation = GetControlRotation();
-				// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
+	//// try and fire a projectile
+	//if (ProjectileClass != nullptr)
+	//{
+	//	UWorld* const World = GetWorld();
+	//	if (World != nullptr)
+	//	{
+	//		if (bUsingMotionControllers)
+	//		{
+	//			const FRotator SpawnRotation = VR_MuzzleLocation->GetComponentRotation();
+	//			const FVector SpawnLocation = VR_MuzzleLocation->GetComponentLocation();
+	//			World->SpawnActor<ASpiderMan2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation);
+	//		}
+	//		else
+	//		{
+	//			const FRotator SpawnRotation = GetControlRotation();
+	//			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+	//			const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) ? FP_MuzzleLocation->GetComponentLocation() : GetActorLocation()) + SpawnRotation.RotateVector(GunOffset);
 
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	//			//Set Spawn Collision Handling Override
+	//			FActorSpawnParameters ActorSpawnParams;
+	//			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-				// spawn the projectile at the muzzle
-				World->SpawnActor<ASpiderMan2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			}
-		}
-	}
+	//			// spawn the projectile at the muzzle
+	//			LastActor = World->SpawnActor<ASpiderMan2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	//			Cast<ASpiderMan2Projectile>(LastActor)->projectileOwner = this;
+	//		}
+	//	}
+	//}
 
-	// try and play the sound if specified
-	if (FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
+	//// try and play the sound if specified
+	//if (FireSound != nullptr)
+	//{
+	//	UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+	//}
 
-	// try and play a firing animation if specified
-	if (FireAnimation != nullptr)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
+	//// try and play a firing animation if specified
+	//if (FireAnimation != nullptr)
+	//{
+	//	// Get the animation object for the arms mesh
+	//	UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+	//	if (AnimInstance != nullptr)
+	//	{
+	//		AnimInstance->Montage_Play(FireAnimation, 1.f);
+	//	}
+	//}
 }
 
 void ASpiderMan2Character::OnResetVR()
@@ -295,6 +320,6 @@ bool ASpiderMan2Character::EnableTouchscreenMovement(class UInputComponent* Play
 		//PlayerInputComponent->BindTouch(EInputEvent::IE_Repeat, this, &ASpiderMan2Character::TouchUpdate);
 		return true;
 	}
-	
+
 	return false;
 }

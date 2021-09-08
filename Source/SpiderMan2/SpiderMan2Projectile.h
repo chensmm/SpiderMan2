@@ -1,9 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
-
 #include "CoreMinimal.h"
+#include "SpiderMan2Character.h"
 #include "GameFramework/Actor.h"
+#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "SpiderMan2Projectile.generated.h"
 
 class USphereComponent;
@@ -28,10 +29,11 @@ public:
 	/** called when projectile hits something */
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-	UPROPERTY(BlueprintReadWrite, Category = "Test")
-		ACharacter* projectileOwner;
-	UFUNCTION()
-		void SetPhysicsConstraintComponent(AActor* AttachTarget);
+
+	UPROPERTY(VisibleAnywhere, Category = "Test")
+		ASpiderMan2Character* projectileOwner;
+	UPROPERTY()
+		FVector hitPosition;
 
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
